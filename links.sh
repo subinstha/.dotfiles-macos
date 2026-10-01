@@ -26,6 +26,8 @@ ln -s ~/.dotfiles-macos/sketchybar ~/.config/sketchybar
 # nvim
 ln -s ~/.dotfiles-macos/nvim ~/.config/nvim
 
+# claude code
+~/.dotfiles-macos/.claude/link-claude.sh
 
 # gitconfig
 git config --global core.excludesfile ~/.gitignore_global

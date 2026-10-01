@@ -1,1 +1,16 @@
 .DS_Store
+
+# ~/.gitignore_global ignores .claude/ everywhere, since in a normal repo it is
+# per-project agent scratch. This repo is the exception: .claude/ here IS the
+# reusable config (commands, hooks, settings.local.json), so re-include it.
+# Skills live in ai/skills, outside .claude, because Codex shares them too.
+# Runtime state stays in ~/.claude and never lands here.
+!.claude/
+.claude/*.bak-*
+.claude/*.pre-merge
+
+# ~/.claude/skills is a symlink to ai/skills, so Claude Code writes the skills it
+# syncs from the account straight into this repo. The bucket name is a per-account
+# UUID and manifest.json carries a timestamp, so none of it is portable or
+# stable. A fresh login re-downloads the lot.
+ai/skills/synced/

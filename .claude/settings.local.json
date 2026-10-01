@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(alias:*)",
+      "Bash(mdfind:*)",
+      "Bash(/Applications/kitty.app/Contents/MacOS/kitty --debug-config)",
+      "WebFetch(domain:www.subinstha.com.np)"
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/subin/.bun/bin/bunx -q ccusage statusline",
+    "padding": 0
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME\"/.dotfiles-macos/.claude/hooks/unslop-session-start.sh",
+            "timeout": 10,
+            "statusMessage": "Loading unslop"
+          }
+        ]
+      }
+    ]
+  }
+}

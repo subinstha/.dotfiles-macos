@@ -1,0 +1,8 @@
+{
+  "name": "code-review",
+  "description": "Deep code review for bugs, duplication, silent failures, maintainability, and convention compliance",
+  "author": {
+    "name": "Subin",
+    "email": "subinshrestha429@gmail.com"
+  }
+}
