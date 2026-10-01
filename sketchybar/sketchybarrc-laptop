@@ -23,8 +23,11 @@ sketchybar --bar \
     sticky=on \
     padding_left=12 \
     padding_right=12 \
-    notch_width=188 \
-    display=main
+    notch_width=188
+
+# `display` is set separately so it can be recomputed on display_change,
+# see the bar_display item at the bottom of this file.
+"$PLUGIN_SHARED_DIR/bar_display.sh"
 
 # Alternatiive background colors
 # label.color=0xffffffff
@@ -241,6 +244,14 @@ sketchybar --add event spotify_change $SPOTIFY_EVENT \
     label.padding_left=0 \
     script="$PLUGIN_DIR/spotify.sh" \
     --subscribe spotify spotify_change mouse.clicked
+
+# Invisible item whose only job is to re-pin the bar to the laptop panel
+# when monitors are plugged in/out or the arrangement changes.
+sketchybar --add item bar_display left \
+    --set bar_display \
+    drawing=off \
+    script="$PLUGIN_SHARED_DIR/bar_display.sh" \
+    --subscribe bar_display display_change system_woke
 
 ##### Finalizing Setup #####
 sketchybar --update
