@@ -1,4 +1,10 @@
 .DS_Store
+.agents/
 .ai/
 .claude/
+.codex/
 CLAUDE.md
+CLAUDE.local.md
+opencode.jsonc
+.opencode
+.serena
