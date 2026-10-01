@@ -10,9 +10,9 @@ update_space() {
         ICON_PADDING_RIGHT=7
         ;;
     *)
-        ICON=$SPACE_ID
-        ICON_PADDING_LEFT=9
-        ICON_PADDING_RIGHT=10
+        ICON=󰅶
+        ICON_PADDING_LEFT=7
+        ICON_PADDING_RIGHT=7
         ;;
     esac
 
