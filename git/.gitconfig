@@ -20,7 +20,25 @@
 	smudge = git-lfs smudge -- %f
 [core]
 	excludesfile = /Users/subin/.gitignore_global
+	pager = delta
 [pull]
 	rebase = true
 [rebase]
 	autoStash = true
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+	syntax-theme = Dracula
+[merge]
+	conflictstyle = diff3
+[diff]
+	colorMoved = default
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
