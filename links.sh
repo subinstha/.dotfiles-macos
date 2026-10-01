@@ -26,6 +26,10 @@ ln -s ~/.dotfiles-macos/sketchybar ~/.config/sketchybar
 # nvim
 ln -s ~/.dotfiles-macos/nvim ~/.config/nvim
 
+# kitty
+mkdir -p ~/.config/kitty
+ln -s ~/.dotfiles-macos/kitty/kitty.conf ~/.config/kitty/kitty.conf
+
 # claude code
 ~/.dotfiles-macos/.claude/link-claude.sh
 
