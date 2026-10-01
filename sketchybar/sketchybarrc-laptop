@@ -7,6 +7,15 @@ PLUGIN_SHARED_DIR="$HOME/.config/sketchybar/plugins"
 
 SPOTIFY_EVENT="com.spotify.client.PlaybackStateChanged"
 
+# Claude Code / Codex usage meters, see ai_usage_item below.
+AI_SIZE=10.0        # font size of the two rows
+AI_DIM=0xff8087a2   # the static 5h / 7d column
+AI_CELL=6           # one monospace cell at AI_SIZE: 0.6em * 10.0pt
+AI_ROW_LIFT=6       # how far each row sits off the centre line
+AI_PAD=8            # inside the bracket, before the logo and after the rows
+AI_GAP=10           # between a group and whatever is in front of it, see $name.gap
+AI_REFRESH=120      # seconds between readings, also refreshed on click and on wake
+
 sketchybar --bar \
     height=32 \
     color=0xFF44475A \
@@ -95,6 +104,105 @@ sketchybar --add bracket front_app_bracket \
     front_app.separator \
     front_app.name \
     --subscribe front_app front_app_switched
+
+# Claude Code and Codex usage, as a logo and two stacked rows:
+#
+#     5h  <rail>   31% Thu 14:20
+#     7d  <rail>   78% Wed 06:00
+#
+# sketchybar has no multi-line item, so each row is its own item and the lower
+# one is dragged back underneath the upper one by a negative left padding. The
+# 5h / 7d column pulls the same trick inside a single item, using the two text
+# runs it already has. Both work only because the widths are fixed: 5h and 7d
+# are 2 cells, and plugins/ai_usage.sh always writes 23 cells per row whatever
+# the fill level (8 rail, space, 4 percent, space, 9 reset time).
+#
+# sketchybar pads every text run by a pixel, hence the stray + 2 and + 1.
+AI_WINDOW_W=$(( 2 * AI_CELL + 1 ))
+AI_ROW_W=$(( 23 * AI_CELL + AI_PAD + 2 ))
+
+ai_usage_item() {
+    local name=$1 glyph=$2 color=$3
+    local row_font="$FONT_FACE:Bold:$AI_SIZE"
+
+    # An empty item carrying nothing but padding. A bracket swallows the
+    # background padding of the items on its ends, so a gap written onto the
+    # logo or onto the item in front just moves inside one of the two brackets
+    # and they still touch. Something outside both of them has to hold it.
+    sketchybar --add item "$name.gap" left \
+        --set "$name.gap" \
+        icon.drawing=off \
+        label.drawing=off \
+        background.drawing=off \
+        background.padding_left=$AI_GAP \
+        background.padding_right=0 \
+        \
+        --add item "$name" left \
+        --set "$name" \
+        icon="$glyph" \
+        icon.color="$color" \
+        icon.font="$FONT_FACE:Bold:16.0" \
+        icon.padding_left=$AI_PAD \
+        icon.padding_right=$AI_PAD \
+        label.drawing=off \
+        background.drawing=off \
+        background.padding_left=0 \
+        background.padding_right=0 \
+        update_freq=$AI_REFRESH \
+        script="$PLUGIN_SHARED_DIR/ai_usage.sh $name" \
+        --subscribe "$name" mouse.clicked system_woke \
+        \
+        --add item "$name.window" left \
+        --set "$name.window" \
+        icon=5h \
+        icon.color=$AI_DIM \
+        icon.font="$row_font" \
+        icon.y_offset=$AI_ROW_LIFT \
+        icon.padding_left=0 \
+        icon.padding_right=0 \
+        label=7d \
+        label.color=$AI_DIM \
+        label.font="$row_font" \
+        label.y_offset=-$AI_ROW_LIFT \
+        label.padding_left=-$AI_WINDOW_W \
+        label.padding_right=0 \
+        background.drawing=off \
+        background.padding_left=0 \
+        background.padding_right=$AI_CELL \
+        \
+        --add item "$name.session" left \
+        --set "$name.session" \
+        y_offset=$AI_ROW_LIFT \
+        icon.font="$row_font" \
+        icon.padding_left=0 \
+        icon.padding_right=0 \
+        label.font="$row_font" \
+        label.padding_left=0 \
+        label.padding_right=$AI_PAD \
+        background.drawing=off \
+        background.padding_left=0 \
+        background.padding_right=0 \
+        \
+        --add item "$name.weekly" left \
+        --set "$name.weekly" \
+        y_offset=-$AI_ROW_LIFT \
+        icon.font="$row_font" \
+        icon.padding_left=0 \
+        icon.padding_right=0 \
+        label.font="$row_font" \
+        label.padding_left=0 \
+        label.padding_right=$AI_PAD \
+        background.drawing=off \
+        background.padding_left=-$AI_ROW_W \
+        background.padding_right=0 \
+        \
+        --add bracket "$name.bracket" \
+        "$name" "$name.window" "$name.session" "$name.weekly" \
+        --set "$name.bracket" background.color=0x806272A4
+}
+
+ai_usage_item claude "" 0xfff5a97f
+ai_usage_item codex  "" 0xff8bd5ca
 
 sketchybar --add item clock right \
     --set clock \
