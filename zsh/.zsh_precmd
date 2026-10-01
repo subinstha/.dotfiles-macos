@@ -1,11 +1,2 @@
 # Pre Cmd commands
-
-# Check before adding alias
-if [ -d .git ]; then
-  alias gitso="git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)"
-fi
-
-# Tmux
-alias tfirst="tmux attach-session -t \$(tmux list-sessions -F '#{session_name}' | head -1)"
-alias tlast="tmux attach-session -t \$(tmux list-sessions -F '#{session_name}' | tail -1)"
-alias tnew="tmux new-session -s \$(basename \"\$(pwd)\")"
+# Keep this file minimal - it runs on every prompt

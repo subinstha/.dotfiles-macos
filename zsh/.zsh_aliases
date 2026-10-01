@@ -7,7 +7,8 @@ alias dctest='docker compose --profile test run test'
 alias dcv='docker compose -f docker-compose.dev.yml'
 alias dcvweb='docker compose -f docker-compose.dev.yml run web rails'
 alias docker-prune="docker image prune -a"
-alias docker-rm-images="docker rmi -f $(docker images -f "dangling=true" -q)"
+function docker-rm-images { docker rmi -f $(docker images -f "dangling=true" -q) }
+function dcsa { docker stop $(docker ps -q) }
 
 # Git
 alias gits='git status'
@@ -15,8 +16,6 @@ alias gitl='git log --graph --decorate'
 alias gitf='git fetch'
 alias gitc='git config --list'
 alias gitpersonal='git config user.email "48222247+sthasubin429@users.noreply.github.com"'
-alias gitbajra='git config user.email "subinshrestha2@bajratechnologies.com"'
-alias gitoutcode='git config user.email "127188945+SubinShrestha-Outcode@users.noreply.github.com"'
 alias gitfetchly='git config user.email "166415037+subinsth@users.noreply.github.com"'
 alias gitcm='git commit -m'
 alias gitlo='git log --graph --decorate --oneline'
@@ -24,6 +23,36 @@ alias gitp='git push'
 alias gitpl='git pull'
 alias gitpf='git push --force-with-lease'
 alias gitd='git diff --staged'
+
+# OMZ Git Plugin Aliases
+alias g='git'
+alias ga='git add'
+alias gaa='git add --all'
+alias gst='git status'
+alias gc='git commit'
+alias gcmsg='git commit -m'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gp='git push'
+alias gl='git pull'
+alias gb='git branch'
+alias gba='git branch -a'
+alias gbd='git branch -d'
+alias glog='git log --oneline --decorate --graph'
+alias gloga='git log --oneline --decorate --graph --all'
+alias gsta='git stash push'
+alias gstp='git stash pop'
+alias gstl='git stash list'
+alias gm='git merge'
+alias grb='git rebase'
+alias grbi='git rebase -i'
+alias gcp='git cherry-pick'
+alias grs='git restore'
+alias grss='git restore --staged'
+alias gsw='git switch'
+alias gswc='git switch -c'
 
 # Code Climate
 alias cca='codeclimate analyze'
@@ -55,15 +84,37 @@ alias gcommit="gcommit"
 alias bat="bat --theme=Dracula --style='numbers,changes,header'"
 alias cat="bat"
 
-# anaconda
-alias cbase="conda activate base"
-alias cenv="conda env list"
-alias cdenv="conda deactivate"
 
 # utils
-alias update="brew update && brew upgrade && brew cleanup && brew doctor && omz update && brew cleanup --prune=all"
+# codex is the brew cask, so `brew upgrade --greedy` covers it; claude is an npm global install
+alias update="brew update && brew upgrade --greedy && brew cleanup && brew doctor && brew cleanup --prune=all && npm install -g --allow-scripts=@anthropic-ai/claude-code @anthropic-ai/claude-code@latest"
 alias ngUpdate="npm uninstall -g @angular/cli && npm install -g @angular/cli@latest"
-alias jn="cbase && jupyter notebook"
+alias jn="jupyter notebook"
 
-# the fuck
-alias f="fuck"
+# claude
+# One config dir now (~/.claude, the default) — the work/personal split is gone.
+alias cc="claude --permission-mode auto"
+
+# codex
+alias cx="codex"
+
+# gh
+alias ghp="gh auth switch --user sthasubin429"
+alias ghf="gh auth switch --user subinsth"
+
+# tmux
+alias tfirst='tmux attach-session -t $(tmux list-sessions -F "#{session_name}" | head -1)'
+alias tlast='tmux attach-session -t $(tmux list-sessions -F "#{session_name}" | tail -1)'
+alias tnew='tmux new-session -s $(basename "$PWD")'
+
+# git push set upstream (function so it evaluates at runtime)
+gso() {
+  git push --set-upstream origin "$(git rev-parse --abbrev-ref HEAD)"
+}
+
+# Git diff shortcuts
+alias d='git diff'
+db() {
+  local branch="${1:-main}"
+  git diff "$branch"...HEAD
+}

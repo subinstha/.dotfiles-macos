@@ -1,0 +1,24 @@
+#!/bin/bash
+# Measure zsh startup time in a new tmux window
+
+TIMING_DIR="/tmp/zsh_timing_$$"
+mkdir -p "$TIMING_DIR"
+
+# Create the temp zshrc
+cat > "$TIMING_DIR/.zshrc" << 'EOF'
+# Source the real zshrc
+[[ -f ~/.zshrc ]] && source ~/.zshrc
+
+# Calculate and display timing after startup completes
+if [[ -n "$ZSH_TIMING_START" ]]; then
+  ZSH_TIMING_END=$(date +%s%N)
+  DIFF_NS=$((ZSH_TIMING_END - ZSH_TIMING_START))
+  DIFF_MS=$(echo "scale=2; $DIFF_NS / 1000000" | bc)
+  echo "READY"
+  echo "zsh startup time: ${DIFF_MS}ms"
+  unset ZSH_TIMING_START ZSH_TIMING_END
+fi
+EOF
+
+# Launch tmux window with timing
+tmux new-window "export ZSH_TIMING_START=\$(date +%s%N); echo 'STARTED'; ZDOTDIR='$TIMING_DIR' exec zsh"

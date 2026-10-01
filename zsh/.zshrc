@@ -1,129 +1,33 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+# History
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt HIST_IGNORE_DUPS SHARE_HISTORY APPEND_HISTORY
 
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# Claude Code uses one profile: ~/.claude. Credentials are stored per config
+# dir (keychain service "Claude Code-credentials-<sha256 of the path>"), so a
+# stale CLAUDE_CONFIG_DIR inherited from a pre-merge parent process sends
+# Claude Code to a second, unauthenticated profile and it asks you to log in
+# again. Unset it here so every shell lands on the default.
+unset CLAUDE_CONFIG_DIR
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time Oh My Zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME=""
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
-
-source $ZSH/oh-my-zsh.sh
+# Completion (cached - regenerates once per day)
+autoload -Uz compinit
+compinit -C
+zstyle ':completion:*' menu select
 
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
-eval "$(rbenv init -)"
-
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch $(uname -m)"
-
-# Set personal aliases, overriding those provided by Oh My Zsh libs,
-# plugins, and themes. Aliases can be placed here, though Oh My Zsh
-# users are encouraged to define aliases within a top-level file in
-# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
-# - $ZSH_CUSTOM/aliases.zsh
-# - $ZSH_CUSTOM/macos.zsh
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# the fuck cli
-eval $(thefuck --alias)
 
 bindkey "^X\\x7f" backward-kill-line
 
 source ~/.zsh_aliases
 source ~/.zsh_install
 
-precmd(){
-  source ~/.zsh_precmd
-}
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/subin/clones/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/subin/clones/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/subin/clones/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/subin/clones/google-cloud-sdk/completion.zsh.inc'; fi
+# Google Cloud SDK (disabled - slow)
+# if [ -f '/Users/subin/clones/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/subin/clones/google-cloud-sdk/path.zsh.inc'; fi
+# if [ -f '/Users/subin/clones/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/subin/clones/google-cloud-sdk/completion.zsh.inc'; fi
 
 export R_HOME=/usr/local/bin/R
 
@@ -142,3 +46,51 @@ export PATH="/Users/subin/.antigravity/antigravity/bin:$PATH"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# opencode
+export PATH=/Users/subin/.opencode/bin:$PATH
+
+# AWS Profile
+# export AWS_PROFILE=applypilot  # disabled: use the [default] profile (account 787085304398, us-east-1)
+eval "$(rbenv init - zsh)"
+
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
+# Added by Antigravity IDE
+export PATH="/Users/subin/.antigravity-ide/antigravity-ide/bin:$PATH"
+. "/Users/subin/.deno/env"
+
+# ── Headroom: context-compression proxy for coding agents ────────────────────
+# CLI installed with: uv tool install --python 3.13 "headroom-ai[proxy,mcp,code]"
+# (deliberately NOT the desktop app, and never the [all] extra — it drags in
+# torch/CUDA). Binary lands in ~/.local/bin, already on PATH above.
+#
+# `headroom wrap claude` starts the proxy on :8787, points ANTHROPIC_BASE_URL at
+# it, and registers Headroom's MCP retrieve tool for the launched session.
+# Run it from a project dir — Claude Code picks up that project's .mcp.json and
+# local-scope MCP servers from the cwd, so `cchr` in ComplyPilot gets the repo's
+# aws-billing / aws-pricing / aws-cloudwatch servers plus Headroom's.
+#
+#   --1m  Claude Code drops the context-1m beta header behind a custom
+#         ANTHROPIC_BASE_URL and silently caps at 200k; this restores the 1M
+#         window by forcing ANTHROPIC_MODEL=<model>[1m].
+#
+# ANTHROPIC_MODEL is pinned per-function because --1m's own fallback is a
+# hardcoded claude-opus-4-8 (headroom 0.34.0, _DEFAULT_1M_MODEL in cli/wrap.py)
+# — without it you get silently downgraded. Headroom only appends the [1m]
+# suffix to whatever is already set, so pinning picks the model.
+#
+#   cchr    Opus 5,   1M window  — Headroom-wrapped equivalent of `cc`
+#   cchrs   Sonnet 5, 1M window
+#   cxhr    Codex CLI (OpenAI; needs OPENAI_API_KEY or a ChatGPT login)
+#
+# The permission mode mirrors the `cc` alias in ~/.zsh_aliases. These used to
+# pin CLAUDE_CONFIG_DIR too, back when there were separate work and personal
+# profiles; that split was merged into ~/.claude on 2026-08-19. The unset at
+# the top of this file keeps every shell on the default config dir.
+#
+# Switching model mid-session with /model drops the [1m] suffix and falls back
+# to 200k — relaunch with the other function instead.
+cchr()  { ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-claude-opus-5}"   headroom wrap claude --1m --permission-mode auto "$@"; }
+cchrs() { ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-claude-sonnet-5}" headroom wrap claude --1m --permission-mode auto "$@"; }
+cxhr()  { headroom wrap codex "$@"; }
