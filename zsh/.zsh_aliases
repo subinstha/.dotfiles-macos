@@ -15,8 +15,7 @@ alias gits='git status'
 alias gitl='git log --graph --decorate'
 alias gitf='git fetch'
 alias gitc='git config --list'
-alias gitpersonal='git config user.email "48222247+sthasubin429@users.noreply.github.com"'
-alias gitfetchly='git config user.email "166415037+subinsth@users.noreply.github.com"'
+alias gitpersonal='git config user.email "48222247+subinstha@users.noreply.github.com"'
 alias gitcm='git commit -m'
 alias gitlo='git log --graph --decorate --oneline'
 alias gitp='git push'
@@ -77,9 +76,6 @@ alias gupgrade="commit -t 'Upgrade' -m "
 alias gchore="commit -t 'Chore' -m "
 alias ghelp="commit -h"
 
-# Fetchly git aliases
-alias gcommit="gcommit"
-
 # Bat
 alias bat="bat --theme=Dracula --style='numbers,changes,header'"
 alias cat="bat"
@@ -99,8 +95,7 @@ alias cc="claude --permission-mode auto"
 alias cx="codex"
 
 # gh
-alias ghp="gh auth switch --user sthasubin429"
-alias ghf="gh auth switch --user subinsth"
+alias ghp="gh auth switch --user subinstha"
 
 # tmux
 alias tfirst='tmux attach-session -t $(tmux list-sessions -F "#{session_name}" | head -1)'

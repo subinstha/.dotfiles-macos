@@ -1,6 +1,6 @@
 [user]
 	name = subin
-	email = 48222247+sthasubin429@users.noreply.github.com
+	email = 48222247+subinstha@users.noreply.github.com
 [init]
 	defaultBranch = main
 [alias]
@@ -11,8 +11,6 @@
 	ui = auto
 [branch]
 	sort = -committerdate
-[maintenance]
-	repo = /home/subin/fetchly/spheric
 [filter "lfs"]
 	process = git-lfs filter-process
 	required = true
