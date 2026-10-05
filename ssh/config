@@ -11,30 +11,7 @@ Host outcode
   PreferredAuthentications publickey
   IdentityFile ~/.ssh/outcode_git
 
-Host fetchly
-  HostName github.com
-  PreferredAuthentications publickey
-  IdentityFile ~/.ssh/fetchly_git
-
 Host monicais
   HostName gitlab.com
   PreferredAuthentications publickey
   IdentityFile ~/.ssh/monica_git
-
-Host traidsafe_be_dev
-  HostName development.traidsafe.fetchlydev.com
-  User ubuntu
-  PreferredAuthentications publickey
-  IdentityFile ~/.ssh/fetchly_ssh
-
-Host traidsafe_be_staging
-  HostName staging.traidsafe.com
-  User ubuntu
-  PreferredAuthentications publickey
-  IdentityFile ~/.ssh/fetchly_ssh
-
-Host vintagecards_be_staging
-  HostName staging.api.vintagecards.com
-  User ubuntu
-  PreferredAuthentications publickey
-  IdentityFile ~/.ssh/fetchly_ssh
