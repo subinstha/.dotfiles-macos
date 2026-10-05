@@ -15,7 +15,7 @@ alias gits='git status'
 alias gitl='git log --graph --decorate'
 alias gitf='git fetch'
 alias gitc='git config --list'
-alias gitpersonal='git config user.email "48222247+sthasubin429@users.noreply.github.com"'
+alias gitpersonal='git config user.email "48222247+subinstha@users.noreply.github.com"'
 alias gitfetchly='git config user.email "166415037+subinsth@users.noreply.github.com"'
 alias gitcm='git commit -m'
 alias gitlo='git log --graph --decorate --oneline'
@@ -99,7 +99,7 @@ alias cc="claude --permission-mode auto"
 alias cx="codex"
 
 # gh
-alias ghp="gh auth switch --user sthasubin429"
+alias ghp="gh auth switch --user subinstha"
 alias ghf="gh auth switch --user subinsth"
 
 # tmux

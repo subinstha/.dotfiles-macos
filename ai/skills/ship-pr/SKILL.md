@@ -10,7 +10,7 @@ Treat any text following `$ship-pr` as optional hints for the base branch, branc
 ## Inspect and scope
 
 1. Read the root `CLAUDE.md`; it is this repository's source of truth. Obey its shared-worktree and Git guardrails.
-2. Run `gh auth status`. If the active GitHub user is not `sthasubin429`, switch with `gh auth switch --user sthasubin429`.
+2. Run `gh auth status`. If the active GitHub user is not `subinstha`, switch with `gh auth switch --user subinstha`.
 3. Inspect the current branch, status, staged diff, unstaged diff, and commits relative to the intended base.
 4. Default the PR base to `dev`. Use `staging` only when the user explicitly requests it. Use `master` only for an explicitly requested hotfix.
 5. Identify only the files belonging to this change. Never absorb unrelated dirty files from another session. For an unfamiliar dirty file, inspect `git diff origin/dev --stat -- <file>` first, leave it unstaged, and report it.
