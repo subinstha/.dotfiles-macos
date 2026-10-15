@@ -32,6 +32,8 @@ CACHE="$CACHE_DIR/ai_usage_$PROVIDER"
 CELLS=8           # rail cells per row, so one cell is 12.5%
 RAIL="━"          # box drawing: cells butt together into one unbroken rail
 RESET_TZ=America/Vancouver
+CELL=6            # AI_CELL in sketchybarrc-laptop
+PAD=8             # AI_PAD in sketchybarrc-laptop
 
 TRACK=0xff939ab7  # unfilled rail and the percentage text
 OK=0xffa6da95
@@ -58,12 +60,18 @@ claude_usage() {
         "\((.seven_day.utilization // 0) | round) \(.seven_day.resets_at | epoch)"'
 }
 
-# Walks the newest rollout files until one carries a rate_limits payload. A
-# session that just started has none yet, hence the loop rather than only
-# looking at the newest file.
+# Collects, from each of the newest rollout files, its last rate_limits event
+# and its last one that carries window numbers, then reads the newest of each
+# by timestamp. File mtime is not enough to order them: parallel sessions
+# interleave, and a session keeps logging tool output after its last reading.
+#
+# The two differ once a limit is hit. Codex then logs an event with a
+# rate_limit_reached_type and null windows, so the numbers come from the last
+# event that had them, and the fuller window is pinned to 100 for as long as
+# that event stays the newest one.
 codex_usage() {
     local -a days files
-    local day file line
+    local day file
 
     days=( $HOME/.codex/sessions/*/*/*(/Nom) )
     (( $#days )) || return 1
@@ -73,13 +81,16 @@ codex_usage() {
     done
 
     for file in ${files[1,8]}; do
-        line=$(tail -r "$file" 2>/dev/null | grep -m1 '"rate_limits":{') || continue
-        print -r -- "$line" | jq -er '
-            [.. | objects | .rate_limits? | select(. != null)] | last |
-            "\((.primary.used_percent // 0) | round) \(.primary.resets_at // 0) " +
-            "\((.secondary.used_percent // 0) | round) \(.secondary.resets_at // 0)"' && return 0
-    done
-    return 1
+        tail -r "$file" 2>/dev/null | grep -m1 '"rate_limits":{'
+        tail -r "$file" 2>/dev/null | grep -m1 '"primary":{"used_percent"'
+    done | jq -ers '
+        map({t: .timestamp, r: ([.. | objects | .rate_limits? | select(. != null)] | last)})
+        | sort_by(.t)
+        | (last.r.rate_limit_reached_type != null) as $blocked
+        | map(.r | select(.primary != null)) | last | select(. != null)
+        | [(.primary.used_percent // 0), (.secondary.used_percent // 0)] as [$p, $s]
+        | "\(if $blocked and $p >= $s then 100 else $p | round end) \(.primary.resets_at // 0) " +
+          "\(if $blocked and $s > $p then 100 else $s | round end) \(.secondary.resets_at // 0)"'
 }
 
 # "Thu 16:19", or a placeholder of the same width when the reset time is
@@ -113,10 +124,15 @@ repeat_char() {
 # underneath the session row by a fixed negative padding. The icon keeps one
 # cell even at nothing used, because an empty text run costs a pixel of
 # sketchybar's per-run padding and would shift the row.
+#
+# A full rail leaves the label starting with the separator space, and
+# sketchybar drops leading whitespace from a run along with 2px of its width.
+# That row writes the space as left padding instead and gives the 2px back on
+# the right.
 draw_row() {
     local item=$1 pct=$2 reset=$3
-    local fill text_color=$TRACK percent
-    local -i filled=1
+    local fill text_color=$TRACK percent rest
+    local -i filled=1 pad_left=0 pad_right=PAD
 
     if [[ -z $pct ]]; then
         fill=$DEAD
@@ -134,11 +150,21 @@ draw_row() {
         (( filled > CELLS )) && filled=CELLS
     fi
 
+    rest="$percent $(reset_label $reset)"
+    if (( filled == CELLS )); then
+        pad_left=CELL
+        pad_right=$(( PAD + 2 ))
+    else
+        rest="$(repeat_char $(( CELLS - filled )) $RAIL) $rest"
+    fi
+
     sketchybar --set "$item" \
         icon="$(repeat_char $filled $RAIL)" \
         icon.color=$fill \
-        label="$(repeat_char $(( CELLS - filled )) $RAIL) $percent $(reset_label $reset)" \
-        label.color=$text_color
+        label="$rest" \
+        label.color=$text_color \
+        label.padding_left=$pad_left \
+        label.padding_right=$pad_right
 }
 
 reading=$(${PROVIDER}_usage)
