@@ -33,5 +33,8 @@ ln -s ~/.dotfiles-macos/kitty/kitty.conf ~/.config/kitty/kitty.conf
 # claude code
 ~/.dotfiles-macos/.claude/link-claude.sh
 
+# ai warmup launchd job
+~/.dotfiles-macos/install/install-ai-warmup.sh
+
 # gitconfig
 git config --global core.excludesfile ~/.gitignore_global

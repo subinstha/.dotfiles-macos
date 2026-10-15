@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.subin.ai-warmup</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/subin/.dotfiles-macos/scripts/ai-warmup</string>
+    </array>
+
+    <!-- 5 hours apart plus a few minutes, so each run lands after the previous window has expired -->
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict>
+            <key>Hour</key>
+            <integer>5</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>10</integer>
+            <key>Minute</key>
+            <integer>5</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>15</integer>
+            <key>Minute</key>
+            <integer>10</integer>
+        </dict>
+    </array>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <key>StandardOutPath</key>
+    <string>/Users/subin/Library/Logs/ai-warmup.launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/subin/Library/Logs/ai-warmup.launchd.log</string>
+</dict>
+</plist>
