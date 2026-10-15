@@ -4,6 +4,7 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"jay-babu/mason-null-ls.nvim",
+			"nvimtools/none-ls-extras.nvim",
 		},
 		config = function()
 			local null_ls = require("null-ls")
@@ -28,7 +29,7 @@ return {
 							"markdown",
 						},
 					}),
-					null_ls.builtins.diagnostics.eslint_d,
+					require("none-ls.diagnostics.eslint_d"),
 
 					-- Python
 					null_ls.builtins.formatting.black,
@@ -38,8 +39,7 @@ return {
 					null_ls.builtins.formatting.rubocop,
 					null_ls.builtins.diagnostics.rubocop,
 
-					-- Rust
-					null_ls.builtins.formatting.rustfmt,
+					-- Rust: formatting (rustfmt) and linting (clippy) come from rust_analyzer
 				},
 			})
 
