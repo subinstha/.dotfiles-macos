@@ -75,16 +75,30 @@ else
     status=1
 fi
 
-if out=$(with_timeout 120 codex exec "$prompt" \
-    --skip-git-repo-check \
-    --ephemeral \
-    --ignore-user-config \
-    --sandbox read-only \
-    -c model_reasoning_effort=low < /dev/null 2>&1); then
-    say "codex ok: $(echo "$out" | tail -n 1)"
-else
-    say "codex FAILED: $(echo "$out" | tail -n 3 | tr '\n' ' ')"
-    status=1
-fi
+# codex exec sometimes hangs with no output until the timeout kills it, and the
+# next attempt usually works, so give it one retry.
+codex_ok=0
+for attempt in 1 2; do
+    out=$(with_timeout 120 codex exec "$prompt" \
+        --skip-git-repo-check \
+        --ephemeral \
+        --ignore-user-config \
+        --sandbox read-only \
+        -c model_reasoning_effort=low < /dev/null 2>&1)
+    rc=$?
+    if [[ $rc -eq 0 ]]; then
+        say "codex ok: $(echo "$out" | tail -n 1)"
+        codex_ok=1
+        break
+    fi
+    # perl's alarm kills codex with SIGALRM, which the shell reports as 128+14
+    if [[ $rc -eq 142 ]]; then
+        say "codex FAILED (attempt $attempt): timed out after 120s $(echo "$out" | tail -n 3 | tr '\n' ' ')"
+    else
+        say "codex FAILED (attempt $attempt, exit $rc): $(echo "$out" | tail -n 3 | tr '\n' ' ')"
+    fi
+    [[ $attempt -eq 1 ]] && sleep 10
+done
+[[ $codex_ok -eq 1 ]] || status=1
 
 exit $status
