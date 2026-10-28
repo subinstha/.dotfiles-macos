@@ -31,9 +31,6 @@ source ~/.zsh_install
 # if [ -f '/Users/subin/clones/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/subin/clones/google-cloud-sdk/path.zsh.inc'; fi
 # if [ -f '/Users/subin/clones/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/subin/clones/google-cloud-sdk/completion.zsh.inc'; fi
 
-export R_HOME=/usr/local/bin/R
-
-export R_HOME=/Library/Frameworks/R.framework/Resources
 export PATH="$HOME/.local/bin:$PATH"
 
 # Added by Antigravity
