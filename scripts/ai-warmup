@@ -61,8 +61,9 @@ fi
 status=0
 
 # --setting-sources project keeps user hooks and plugins out, and $workdir has
-# no project settings. Login still comes from the keychain.
-if out=$(with_timeout 120 claude -p "$prompt" \
+# no project settings. Login still comes from the keychain. This warms the
+# personal profile; the default ~/.claude is the work one.
+if out=$(CLAUDE_CONFIG_DIR="$HOME/.claude-personal" with_timeout 120 claude -p "$prompt" \
     --model haiku \
     --setting-sources project \
     --strict-mcp-config \

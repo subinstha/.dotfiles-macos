@@ -88,8 +88,49 @@ alias ngUpdate="npm uninstall -g @angular/cli && npm install -g @angular/cli@lat
 alias jn="jupyter notebook"
 
 # claude
-# One config dir now (~/.claude, the default) — the work/personal split is gone.
+# Two profiles, each logged into its own subscription. Skills, commands, hooks
+# and plugins are shared through symlinks (see
+# ~/.dotfiles-macos/.claude/link-claude.sh).
+#   ~/.claude           work, the default (no CLAUDE_CONFIG_DIR)
+#   ~/.claude-personal  personal, picked by CLAUDE_CONFIG_DIR
+#
+# Work has the default folder because the Claude desktop app only reads
+# ~/.claude. The desktop app and IDE extensions don't go through zsh, so they
+# are always on work. From the shell, personal is the default for everything,
+# and work is opt-in:
+#   cc / claude  personal, from any folder
+#   cw           work, only inside CLAUDE_WORK_DIRS (the work account is for
+#                work only)
+# The headroom wrappers in ~/.zshrc are personal too.
+CLAUDE_PERSONAL_DIR="$HOME/.claude-personal"
+CLAUDE_WORK_DIRS=(
+  "$HOME/projects/ComplyPilot"
+  "$HOME/.t3/worktrees/ComplyPilot"
+)
+
+# The `/*` check matches subfolders without also matching a sibling like
+# ~/projects/ComplyPilot-old.
+in_claude_work_dir() {
+  local d
+  for d in "${CLAUDE_WORK_DIRS[@]}"; do
+    [[ $PWD == "$d" || $PWD == "$d"/* ]] && return 0
+  done
+  return 1
+}
+
+claude() { CLAUDE_CONFIG_DIR="$CLAUDE_PERSONAL_DIR" command claude "$@"; }
+
 alias cc="claude --permission-mode auto"
+# The subshell is there because `env -u` can't run builtins like `command`.
+cw() {
+  if ! in_claude_work_dir; then
+    print -u2 "cw: this folder is not for work, so the work account won't run here."
+    print -u2 "Run cc instead for the personal account. cw only runs inside:"
+    print -u2 -l -- "  ${^CLAUDE_WORK_DIRS[@]}"
+    return 1
+  fi
+  (unset CLAUDE_CONFIG_DIR; command claude --permission-mode auto "$@")
+}
 
 # codex
 alias cx="codex"

@@ -4,12 +4,14 @@ SAVEHIST=10000
 HISTFILE=~/.zsh_history
 setopt HIST_IGNORE_DUPS SHARE_HISTORY APPEND_HISTORY
 
-# Claude Code uses one profile: ~/.claude. Credentials are stored per config
-# dir (keychain service "Claude Code-credentials-<sha256 of the path>"), so a
-# stale CLAUDE_CONFIG_DIR inherited from a pre-merge parent process sends
-# Claude Code to a second, unauthenticated profile and it asks you to log in
-# again. Unset it here so every shell lands on the default.
-unset CLAUDE_CONFIG_DIR
+# Claude Code has two profiles, ~/.claude (work, the default) and
+# ~/.claude-personal (personal); ~/.zsh_aliases picks one per command.
+# Credentials are stored per config dir (keychain service
+# "Claude Code-credentials-<sha256 of the path>"), so an inherited
+# CLAUDE_CONFIG_DIR pointing anywhere else, like the retired ~/.claude-work,
+# sends Claude Code to an unauthenticated profile. Keep the personal value,
+# which a `cc` session passes to its shells; drop anything else.
+[[ $CLAUDE_CONFIG_DIR == "$HOME/.claude-personal" ]] || unset CLAUDE_CONFIG_DIR
 
 # Completion (cached - regenerates once per day)
 autoload -Uz compinit
@@ -84,13 +86,12 @@ export PATH="/Users/subin/.antigravity-ide/antigravity-ide/bin:$PATH"
 #   cchrs   Sonnet 5, 1M window
 #   cxhr    Codex CLI (OpenAI; needs OPENAI_API_KEY or a ChatGPT login)
 #
-# The permission mode mirrors the `cc` alias in ~/.zsh_aliases. These used to
-# pin CLAUDE_CONFIG_DIR too, back when there were separate work and personal
-# profiles; that split was merged into ~/.claude on 2026-08-19. The unset at
-# the top of this file keeps every shell on the default config dir.
+# The permission mode mirrors the `cc` alias in ~/.zsh_aliases, and so does
+# the profile: these run on personal, like `cc`. headroom runs the claude
+# binary and skips the claude() wrapper, so the profile is set here.
 #
 # Switching model mid-session with /model drops the [1m] suffix and falls back
 # to 200k — relaunch with the other function instead.
-cchr()  { ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-claude-opus-5}"   headroom wrap claude --1m --permission-mode auto "$@"; }
-cchrs() { ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-claude-sonnet-5}" headroom wrap claude --1m --permission-mode auto "$@"; }
+cchr()  { CLAUDE_CONFIG_DIR="$CLAUDE_PERSONAL_DIR" ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-claude-opus-5}"   headroom wrap claude --1m --permission-mode auto "$@"; }
+cchrs() { CLAUDE_CONFIG_DIR="$CLAUDE_PERSONAL_DIR" ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-claude-sonnet-5}" headroom wrap claude --1m --permission-mode auto "$@"; }
 cxhr()  { headroom wrap codex "$@"; }
