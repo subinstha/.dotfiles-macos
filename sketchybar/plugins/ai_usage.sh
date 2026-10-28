@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Fills in the two usage rows for Claude Code and Codex:
+# Fills in the two usage rows for Claude Code (personal and work) and Codex:
 #
 #     5h  <rail>  <percent used>  <when it resets, Vancouver time>
 #     7d  <rail>  <percent used>  <when it resets, Vancouver time>
@@ -8,8 +8,10 @@
 # The 5h/7d column is static and lives in sketchybarrc-laptop; this only draws
 # the rail and the numbers.
 #
-#   claude -> api.anthropic.com/api/oauth/usage, OAuth token from the login keychain
-#   codex  -> rate_limits on the newest token_count event in ~/.codex/sessions
+#   claude      -> api.anthropic.com/api/oauth/usage, OAuth token from the login
+#                  keychain, personal profile (~/.claude-personal)
+#   claude_work -> the same, work profile (~/.claude)
+#   codex       -> rate_limits on the newest token_count event in ~/.codex/sessions
 #
 # Either source can go missing: the Claude token sits expired until Claude Code
 # refreshes it, and the codex numbers only move when codex itself runs. So the
@@ -21,8 +23,8 @@ setopt null_glob
 zmodload zsh/datetime
 
 PROVIDER=$1
-[[ $PROVIDER == claude || $PROVIDER == codex ]] || {
-    print -u2 "usage: ai_usage.sh <claude|codex>"; exit 1
+[[ $PROVIDER == (claude|claude_work|codex) ]] || {
+    print -u2 "usage: ai_usage.sh <claude|claude_work|codex>"; exit 1
 }
 NAME=${NAME:-$PROVIDER}
 
@@ -44,9 +46,23 @@ DEAD=0xff6e738d   # no reading at all
 # Both readers print "5h_percent 5h_reset_epoch 7d_percent 7d_reset_epoch",
 # or nothing when they can't get a number.
 
+# Claude Code keeps one keychain entry per config dir. The default ~/.claude
+# gets the bare service name. A dir picked with CLAUDE_CONFIG_DIR gets a suffix
+# of the first 8 hex digits of sha256 of its path, cdca6511 for
+# ~/.claude-personal.
 claude_usage() {
+    local suffix
+    suffix=$(print -rn -- "$HOME/.claude-personal" | shasum -a 256 | cut -c1-8)
+    oauth_usage "Claude Code-credentials-$suffix"
+}
+
+claude_work_usage() {
+    oauth_usage "Claude Code-credentials"
+}
+
+oauth_usage() {
     local token json
-    token=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null) || return 1
+    token=$(security find-generic-password -s "$1" -w 2>/dev/null) || return 1
     token=$(print -r -- "$token" | jq -r '.claudeAiOauth.accessToken // empty') || return 1
     [[ -n $token ]] || return 1
 
