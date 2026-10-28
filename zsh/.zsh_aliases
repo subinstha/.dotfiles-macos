@@ -134,6 +134,7 @@ cw() {
 
 # codex
 alias cx="codex"
+alias cxw='codex --worktree'
 
 # gh
 alias ghp="gh auth switch --user subinstha"
