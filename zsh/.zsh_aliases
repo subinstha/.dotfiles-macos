@@ -120,7 +120,20 @@ in_claude_work_dir() {
 
 claude() { CLAUDE_CONFIG_DIR="$CLAUDE_PERSONAL_DIR" command claude "$@"; }
 
-alias cc="claude --permission-mode auto"
+# Personal is allowed in work folders, so cc only warns there. Enter carries
+# on with personal, n stops so you can run cw. No prompt without a terminal.
+# `function cc` rather than `cc()`, so an old `alias cc` in an already-running
+# shell can't expand inside the definition when this file is re-sourced.
+function cc {
+  if in_claude_work_dir && [[ -t 0 ]]; then
+    print -u2 "cc: this is a work folder, and cc runs on the personal account."
+    print -u2 "Use cw for the work account."
+    read -k 1 "?Continue on personal? [Y/n] "
+    [[ $REPLY == $'\n' ]] || print
+    [[ $REPLY == [nN] ]] && return 1
+  fi
+  claude --permission-mode auto "$@"
+}
 # The subshell is there because `env -u` can't run builtins like `command`.
 cw() {
   if ! in_claude_work_dir; then
