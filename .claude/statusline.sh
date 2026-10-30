@@ -56,6 +56,6 @@ find "$lock" -maxdepth 0 -not -newermt "-60 seconds" -exec rmdir {} \; 2>/dev/nu
 # One cache file per session, so drop the ones nobody has touched in a day.
 find "$CACHE_DIR" -type f -mtime +1 -delete 2>/dev/null
 
-usage=$(<"$cache" 2>/dev/null)
+[[ -r $cache ]] && usage=$(<"$cache")
 
 print -rn -- "${color}${email}"$'\e[0m'"${usage:+ · $usage}"
